@@ -82,6 +82,7 @@ __global__ void Trim2FixedPoint_kernel(Dtype* data, const int cnt,
     switch (rounding) {
     case QuantizationParameter_Rounding_NEAREST:
       data[index] = rint(data[index]);
+      //data[index] = floor(data[index]);
       break;
     case QuantizationParameter_Rounding_STOCHASTIC:
       data[index] = __float2int_rd(data[index] + RandUniform_device(index));

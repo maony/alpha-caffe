@@ -62,7 +62,6 @@ Detector::Detector(const string& model_file,
 #else
   Caffe::set_mode(Caffe::GPU);
 #endif
-  Caffe::set_mode(Caffe::CPU);
 
   /* Load the network. */
   net_.reset(new Net<float>(model_file, TEST));
@@ -284,6 +283,10 @@ int main(int argc, char** argv) {
   std::ostream out(buf);
 
   // Process image one by one.
+  char buffer[255];
+  int fontface = cv::FONT_HERSHEY_SIMPLEX;
+  double scale = 0.8;
+  int thickness = 1;
   std::ifstream infile(argv[3]);
   std::string file;
   while (infile >> file) {
@@ -306,8 +309,19 @@ int main(int argc, char** argv) {
           out << static_cast<int>(d[4] * img.rows) << " ";
           out << static_cast<int>(d[5] * img.cols) << " ";
           out << static_cast<int>(d[6] * img.rows) << std::endl;
+          cv::rectangle(img, cv::Point(static_cast<int>(d[3] * img.cols),
+              static_cast<int>(d[4] * img.rows)),
+              cv::Point(static_cast<int>(d[5] * img.cols),
+              static_cast<int>(d[6] * img.rows)),
+              cv::Scalar(0, 255, 0), thickness, 8, 0);
+          snprintf(buffer, sizeof(buffer), "%.2f", score);
+          cv::putText(img, buffer, cv::Point(static_cast<int>(d[3] * img.cols),
+              static_cast<int>(d[4] * img.rows+25)), fontface, scale,
+              CV_RGB(0, 255, 0), thickness, 8);
         }
       }
+      cv::imshow("Display Image", img);
+      cv::waitKey(0);
     } else if (file_type == "video") {
       cv::VideoCapture cap(file);
       if (!cap.isOpened()) {
