@@ -1,2 +1,0 @@
-background 0 background_label
-face 1 face_label
